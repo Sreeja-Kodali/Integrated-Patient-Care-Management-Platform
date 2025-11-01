@@ -56,13 +56,19 @@ streamlit run app_web.py
 📊 Use View Database to explore, search, and filter hospital records.
 4️⃣ The local database file hospital.db automatically stores all records securely.
 
+---
+
 ## 🧠 Highlights
+
 Dynamic table detection and relationship management
 Streamlined CRUD (Create, Read, Update, Delete) operations
 Role-based entity hierarchy (Employee → Doctor / Nurse / Receptionist)
 Real-time data visualization and interactive dashboards
 Minimal, dark-themed interface for professional usability
 
+---
+
 ##🩺 Outcome
+
 An efficient, real-time Hospital Management System that enhances coordination among doctors, staff, and administrators while improving patient care and hospital workflow management.
 
