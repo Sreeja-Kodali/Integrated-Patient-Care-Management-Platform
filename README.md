@@ -1,5 +1,5 @@
 # 🏥 Integrated-Patient-Care-Management-Platform  
-A comprehensive hospital management system that centralizes patient care, staff coordination, room allocation, billing, and medical record tracking — all through a unified and interactive platform built using **Python**, **Streamlit**, and **SQLite**.  
+A comprehensive hospital management system that centralizes patient care, staff coordination, room allocation, billing, and medical record tracking — all through a unified and interactive platform built using **Python**, **Streamlit**, and **MySql**.  
 
 ---
 
