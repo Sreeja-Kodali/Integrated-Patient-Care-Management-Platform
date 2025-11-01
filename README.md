@@ -47,9 +47,10 @@ A comprehensive hospital management system that centralizes patient care, staff 
 
 ## 📖 Usage  
 
-1️⃣ Run the database setup file:  
+-->1️⃣ Run the database setup file:  
 python main.py
-2️⃣ Launch the Streamlit web application:
+
+-->2️⃣ Launch the Streamlit web application:
 streamlit run app_web.py
 3️⃣ In the web app:
 ➕ Use Add Data to insert new records into any hospital table.
