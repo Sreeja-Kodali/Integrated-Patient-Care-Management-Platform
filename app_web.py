@@ -6,10 +6,11 @@ from datetime import datetime
 # ================== DATABASE CONNECTION ==================
 def get_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="admin@123",
-        database="hospital_db"
+        host="bukqxhgtpvn4hogiklcv-mysql.services.clever-cloud.com",
+        user="uq1cmnqukpjg7gpa",
+        password="odV2Yp3EwqIaUFpx64vN",
+        database="bukqxhgtpvn4hogiklcv",
+        port=3306
     )
 
 conn = get_connection()
@@ -20,8 +21,10 @@ st.set_page_config(page_title="Integrated Patient Care Management Platform", pag
 st.title("🏥 Integrated Patient Care Management Platform")
 
 # ================== FETCH TABLES ==================
-cursor.execute("SHOW TABLES")
-all_tables = [row["Tables_in_hospital_db"] for row in cursor.fetchall()]
+cursor.execute("SHOW TABLES;")
+tables = cursor.fetchall()
+all_tables = [list(row.values())[0] for row in tables]
+
 
 # Emojis for better UI
 emoji_map = {
@@ -42,7 +45,7 @@ emoji_map = {
 }
 
 # Sidebar menu
-menu = ["🏠 Home", "📊 View Database"] + [f"{emoji_map.get(t, '📦')} {t}" for t in all_tables]
+menu = ["🏠 Home", "📊 View Database"] + [f"{emoji_map.get(t.capitalize(), '📦')} {t}" for t in all_tables]
 choice = st.sidebar.selectbox("Select Option", menu)
 
 # ================== HOME PAGE ==================

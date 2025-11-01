@@ -2,9 +2,11 @@ import mysql.connector
 
 # ================== CONNECT TO MYSQL DATABASE ==================
 conn = mysql.connector.connect(
-    host="localhost",       # change if needed
-    user="root",            # your MySQL username
-    password="admin@123" # your MySQL password
+    host="bukqxhgtpvn4hogiklcv-mysql.services.clever-cloud.com",
+        user="uq1cmnqukpjg7gpa",
+        password="odV2Yp3EwqIaUFpx64vN",
+        database="bukqxhgtpvn4hogiklcv",
+        port=3306
 )
 cursor = conn.cursor()
 print("✅ Connected to MySQL successfully!")
