@@ -48,33 +48,21 @@ A comprehensive hospital management system that centralizes patient care, staff 
 ## 📖 Usage  
 
 1️⃣ Run the database setup file:  
-```bash
 python main.py
 2️⃣ Launch the Streamlit web application:
-
-bash
-Copy code
 streamlit run app_web.py
 3️⃣ In the web app:
-
 ➕ Use Add Data to insert new records into any hospital table.
-
 📊 Use View Database to explore, search, and filter hospital records.
-
 4️⃣ The local database file hospital.db automatically stores all records securely.
 
-🧠 Highlights
+## 🧠 Highlights
 Dynamic table detection and relationship management
-
 Streamlined CRUD (Create, Read, Update, Delete) operations
-
 Role-based entity hierarchy (Employee → Doctor / Nurse / Receptionist)
-
 Real-time data visualization and interactive dashboards
-
 Minimal, dark-themed interface for professional usability
 
-🩺 Outcome
+##🩺 Outcome
 An efficient, real-time Hospital Management System that enhances coordination among doctors, staff, and administrators while improving patient care and hospital workflow management.
 
-Copy code
