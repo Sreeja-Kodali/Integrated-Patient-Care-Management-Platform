@@ -47,11 +47,11 @@ A comprehensive hospital management system that centralizes patient care, staff 
 
 ## 🧠 Highlights
 
---> Dynamic table detection and relationship management
---> Streamlined CRUD (Create, Read, Update, Delete) operations
---> Role-based entity hierarchy (Employee → Doctor / Nurse / Receptionist)
---> Real-time data visualization and interactive dashboards
---> Minimal, dark-themed interface for professional usability
+➡️ Dynamic table detection and relationship management  
+➡️ Streamlined CRUD (Create, Read, Update, Delete) operations  
+➡️ Role-based entity hierarchy (Employee → Doctor / Nurse / Receptionist)  
+➡️ Real-time data visualization and interactive dashboards  
+➡️ Minimal, dark-themed interface for professional usability  
 
 ---
 
