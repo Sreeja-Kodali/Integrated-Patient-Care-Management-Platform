@@ -68,7 +68,7 @@ Minimal, dark-themed interface for professional usability
 
 ---
 
-##🩺 Outcome
+## 🩺 Outcome
 
 An efficient, real-time Hospital Management System that enhances coordination among doctors, staff, and administrators while improving patient care and hospital workflow management.
 
