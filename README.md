@@ -8,10 +8,11 @@ A comprehensive hospital management system that centralizes patient care, staff 
 | Name | Roll Number |
 |------|--------------|
 | Kodali Sreeja | 2410030076 |
-| Likitha Thumma | 2410030229 |
-| Malreddy Manogna | 2410030430 |
-| H. Esha Manogna | 2410030232 |
 | Bijju Adithi Yadav | 2410030228 |
+| Likitha Thumma | 2410030229 |
+| H. Esha Manogna | 2410030232 |
+| Malreddy Manogna | 2410030430 |
+
 
 ---
 
@@ -40,8 +41,8 @@ A comprehensive hospital management system that centralizes patient care, staff 
 ## 🛠 Tech Stack  
 
 **Frontend / UI**: Streamlit (Python Framework)  
-**Database**: SQLite  
-**Backend Logic**: Python (sqlite3, pandas, datetime)  
+**Database**: MySql
+**Backend Logic**: Python (MySql, pandas, datetime)  
 
 ---
 
@@ -51,7 +52,6 @@ A comprehensive hospital management system that centralizes patient care, staff 
 ➡️ Streamlined CRUD (Create, Read, Update, Delete) operations  
 ➡️ Role-based entity hierarchy (Employee → Doctor / Nurse / Receptionist)  
 ➡️ Real-time data visualization and interactive dashboards  
-➡️ Minimal, dark-themed interface for professional usability  
 
 ---
 

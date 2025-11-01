@@ -1,179 +1,172 @@
-import streamlit as st
-import sqlite3
-import pandas as pd
-from datetime import datetime
+import mysql.connector
 
-# ========================= DATABASE CONNECTION =========================
-def get_connection():
-    return sqlite3.connect("hospital.db")
-
-# ========================= PAGE CONFIG =========================
-st.set_page_config(
-    page_title="🏥 Hospital Management System",
-    page_icon=None,
-    layout="wide"
+# ================== CONNECT TO MYSQL DATABASE ==================
+conn = mysql.connector.connect(
+    host="localhost",       # change if needed
+    user="root",            # your MySQL username
+    password="admin@123" # your MySQL password
 )
-
-# ========================= REMOVE STREAMLIT ICON =========================
-st.markdown("""
-    <head>
-        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-    </head>
-""", unsafe_allow_html=True)
-
-# ========================= TITLE =========================
-st.markdown("""
-    <h2 style='text-align:center; color:white; margin-top:0;'>
-        🏥 Integrated Patient Care Management Platform
-    </h2>
-    <hr>
-""", unsafe_allow_html=True)
-
-# ========================= TAB NAVIGATION =========================
-tab1, tab2 = st.tabs(["🧩 Add / Manage Data", "📊 View Database"])
-
-# ========================= AUTO-DETECT TABLES =========================
-conn = get_connection()
 cursor = conn.cursor()
-cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
-tables = [t[0] for t in cursor.fetchall()]
+print("✅ Connected to MySQL successfully!")
 
-emoji_map = {
-    "Patient": "🧍",
-    "Employee": "💼",
-    "Doctor": "👨‍⚕️",
-    "Nurse": "👩‍⚕️",
-    "Receptionist": "💁‍♀️",
-    "Room": "🏥",
-    "Medicine": "💊",
-    "Equipment": "⚙️",
-    "Record": "📋",
-    "Assigned": "🧩",
-    "Attends": "🤝",
-    "Maintains": "🗂️",
-    "Governs": "🩺",
-    "BilledFor": "💰"
-}
+# ================== CREATE DATABASE ==================
+cursor.execute("CREATE DATABASE IF NOT EXISTS hospital_db")
+cursor.execute("USE hospital_db")
 
-# ========================= TAB 1: ADD / MANAGE DATA =========================
-with tab1:
-    st.subheader("🧩 Add / Manage Data")
+# ================== CREATE TABLES ==================
 
-    if tables:
-        table_choice = st.selectbox("Choose a Table", [f"{emoji_map.get(t, '')} {t}" for t in tables])
-        table_name = table_choice.split(" ", 1)[-1]
+# ---- Employee (Super class) ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Employee (
+    empID INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    sex VARCHAR(10),
+    contactNo VARCHAR(20),
+    qualification VARCHAR(100),
+    experience INT,
+    salary FLOAT
+)
+""")
 
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns = cursor.fetchall()
+# ---- Doctor (ISA Employee) ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Doctor (
+    doctorID INT AUTO_INCREMENT PRIMARY KEY,
+    empID INT,
+    doctorType ENUM('Visiting','Permanent','Trainee'),
+    FOREIGN KEY (empID) REFERENCES Employee(empID)
+)
+""")
 
-        st.markdown(f"### ✍️ Add Record to **{table_name}** Table")
+# ---- Nurse ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Nurse (
+    nurseID INT AUTO_INCREMENT PRIMARY KEY,
+    empID INT,
+    appointment VARCHAR(100),
+    FOREIGN KEY (empID) REFERENCES Employee(empID)
+)
+""")
 
-        if columns:
-            inputs = {}
-            for col in columns:
-                col_name = col[1]
-                col_type = (col[2] or "").upper()
+# ---- Receptionist ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Receptionist (
+    recID INT AUTO_INCREMENT PRIMARY KEY,
+    empID INT,
+    FOREIGN KEY (empID) REFERENCES Employee(empID)
+)
+""")
 
-                # Skip auto-increment primary key fields
-                if col[5] == 1 or col_name.lower().endswith("id"):
-                    continue
+# ---- Room ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Room (
+    roomID INT AUTO_INCREMENT PRIMARY KEY,
+    roomType VARCHAR(50),
+    description VARCHAR(255),
+    extension VARCHAR(50)
+)
+""")
 
-                # ---- Custom Inputs ----
-                if col_name.lower() in ["sex", "gender"]:
-                    inputs[col_name] = st.selectbox(f"Select {col_name}", ["Male", "Female", "Other"])
-                elif col_name.lower() in ["dateadmitted", "datedischarged"]:
-                    date_val = st.date_input(f"Select {col_name}")
-                    inputs[col_name] = date_val.strftime("%Y-%m-%d")
-                elif "INT" in col_type:
-                    inputs[col_name] = st.number_input(f"{col_name}", step=1)
-                elif "REAL" in col_type or "FLOAT" in col_type:
-                    inputs[col_name] = st.number_input(f"{col_name}", format="%.2f")
-                else:
-                    inputs[col_name] = st.text_input(f"Enter {col_name}")
+# ---- Medicine ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Medicine (
+    medCode INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    description VARCHAR(255),
+    price FLOAT
+)
+""")
 
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("✅ Add Record"):
-                    if not any(inputs.values()):
-                        st.warning("⚠️ Please enter at least one field before adding.")
-                    else:
-                        placeholders = ", ".join(["?"] * len(inputs))
-                        cols = ", ".join(inputs.keys())
-                        values = list(inputs.values())
-                        try:
-                            cursor.execute(f"INSERT INTO {table_name} ({cols}) VALUES ({placeholders})", values)
-                            conn.commit()
-                            st.success(f"✅ Record added successfully to {table_name}!")
-                        except Exception as e:
-                            st.error(f"⚠️ Error inserting into {table_name}: {e}")
+# ---- Equipment ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Equipment (
+    equipCode INT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255),
+    price FLOAT
+)
+""")
 
-            with col2:
-                if st.button(f"🗑️ Clear All Records in {table_name}"):
-                    cursor.execute(f"DELETE FROM {table_name}")
-                    conn.commit()
-                    st.warning(f"⚠️ All records deleted from {table_name}")
+# ---- Patient ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Patient (
+    patientID INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
+    sex VARCHAR(10),
+    age INT,
+    contactNo VARCHAR(20),
+    dateAdmitted DATE,
+    dateDischarged DATE
+)
+""")
 
-    else:
-        st.error("No tables found in database. Please run main.py first!")
+# ---- Record ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Record (
+    recordNo INT AUTO_INCREMENT PRIMARY KEY,
+    patientID INT,
+    recordInfo VARCHAR(255),
+    appointment VARCHAR(100),
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID)
+)
+""")
 
-# ========================= TAB 2: VIEW DATABASE =========================
-with tab2:
-    st.subheader("📊 View Database")
+# ---- Relationship Tables ----
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Assigned (
+    assignID INT AUTO_INCREMENT PRIMARY KEY,
+    patientID INT,
+    roomID INT,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID),
+    FOREIGN KEY (roomID) REFERENCES Room(roomID)
+)
+""")
 
-    if tables:
-        st.markdown("### 📋 Total Records in Each Table")
-        summary_data = []
-        for t in tables:
-            try:
-                count = pd.read_sql_query(f"SELECT COUNT(*) AS c FROM {t}", conn)["c"][0]
-                summary_data.append({"Table": f"{emoji_map.get(t, '')} {t}", "Total Records": count})
-            except Exception:
-                pass
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Attends (
+    attendID INT AUTO_INCREMENT PRIMARY KEY,
+    patientID INT,
+    doctorID INT,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID),
+    FOREIGN KEY (doctorID) REFERENCES Doctor(doctorID)
+)
+""")
 
-        if summary_data:
-            df_summary = pd.DataFrame(summary_data)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Maintains (
+    maintainID INT AUTO_INCREMENT PRIMARY KEY,
+    recID INT,
+    recordNo INT,
+    FOREIGN KEY (recID) REFERENCES Receptionist(recID),
+    FOREIGN KEY (recordNo) REFERENCES Record(recordNo)
+)
+""")
 
-            # ✅ Center align all table cells and prevent scroll
-            st.markdown("""
-                <style>
-                    .dataframe td, .dataframe th {
-                        text-align: center !important;
-                        vertical-align: middle !important;
-                        color: white !important;
-                    }
-                    th {
-                        background-color: #0B5345 !important;
-                        font-weight: bold;
-                        text-align: center !important;
-                    }
-                    [data-testid="stDataFrame"] div[data-testid="stHorizontalBlock"] {
-                        overflow-x: hidden !important;
-                    }
-                </style>
-            """, unsafe_allow_html=True)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Governs (
+    governID INT AUTO_INCREMENT PRIMARY KEY,
+    nurseID INT,
+    roomID INT,
+    FOREIGN KEY (nurseID) REFERENCES Nurse(nurseID),
+    FOREIGN KEY (roomID) REFERENCES Room(roomID)
+)
+""")
 
-            st.dataframe(df_summary, use_container_width=True, hide_index=True)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS BilledFor (
+    billID INT AUTO_INCREMENT PRIMARY KEY,
+    patientID INT,
+    medicineID INT,
+    equipmentID INT,
+    treatment VARCHAR(255),
+    totalAmount FLOAT,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID),
+    FOREIGN KEY (medicineID) REFERENCES Medicine(medCode),
+    FOREIGN KEY (equipmentID) REFERENCES Equipment(equipCode)
+)
+""")
 
-        st.markdown("---")
-
-        view_choice = st.selectbox(
-            "Select Table to View",
-            [f"{emoji_map.get(t, '')} {t}" for t in tables],
-            key="view"
-        )
-        view_table = view_choice.split(" ", 1)[-1]
-
-        try:
-            df = pd.read_sql_query(f"SELECT * FROM {view_table}", conn)
-            search = st.text_input("🔍 Search records by keyword")
-            if search:
-                df = df[df.apply(lambda row: row.astype(str).str.contains(search, case=False).any(), axis=1)]
-            st.dataframe(df, use_container_width=True, hide_index=True)
-            st.success(f"✅ Showing {len(df)} record(s) from {view_table}")
-        except Exception as e:
-            st.error(f"⚠️ Could not fetch data: {e}")
-
-    else:
-        st.error("No tables found in database.")
-
+conn.commit()
+print("✅ All MySQL tables created successfully in 'hospital_db'!")
 conn.close()
+print("🚪 Connection closed.")
