@@ -25,7 +25,6 @@ cursor.execute("SHOW TABLES;")
 tables = cursor.fetchall()
 all_tables = [list(row.values())[0] for row in tables]
 
-
 # Emojis for better UI
 emoji_map = {
     "Patient": "🧍",
@@ -68,11 +67,18 @@ elif choice == "📊 View Database":
     selected_table = st.selectbox("Select Table to View", all_tables)
     df = pd.read_sql(f"SELECT * FROM {selected_table}", conn)
 
-    search = st.text_input("🔍 Search in this table")
+    # 🔍 Smart Search / Filter
+    st.write("### 🔍 Search Table Records")
+
+    columns = df.columns.tolist()
+    selected_col = st.selectbox("Select column to search in", columns)
+    search = st.text_input("Enter keyword")
+
     if search:
-        df_filtered = df[df.apply(lambda row: row.astype(str).str.contains(search, case=False).any(), axis=1)]
+        df_filtered = df[df[selected_col].astype(str).str.lower() == search.lower()]
+
         st.dataframe(df_filtered, hide_index=True)
-        st.caption(f"Showing {len(df_filtered)} matching record(s)")
+        st.caption(f"Showing {len(df_filtered)} matching record(s) in column '{selected_col}'")
     else:
         st.dataframe(df, hide_index=True)
         st.caption(f"Showing all {len(df)} record(s)")
